@@ -5,6 +5,7 @@ use std::net::Shutdown;
 use std::net::TcpStream;
 use std::ops::Deref;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::RecvError;
 use std::sync::mpsc::{channel, Receiver, Sender, TryRecvError};
 use std::sync::{Arc, Mutex};
 use std::{fmt::Debug, thread};
@@ -189,6 +190,15 @@ impl EClient {
             Err(TryRecvError::Disconnected) => {
                 Err(IBKRApiLibError::TryRecvError(TryRecvError::Disconnected))
             }
+        }
+    }
+
+    pub fn wait_event(&self) -> Result<Option<ServerRspMsg>, IBKRApiLibError> {
+        match self.evt_chan.1.recv() {
+            Ok(s) => Ok(Some(s)),
+            Err(_) => {
+                Err(IBKRApiLibError::TryRecvError(TryRecvError::Disconnected))
+            },
         }
     }
 
