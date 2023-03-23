@@ -197,7 +197,7 @@ impl EClient {
 
     pub fn wait_event(&self) -> Result<ServerRspMsg, IBKRApiLibError> {
         match self.evt_chan.1.recv() {
-            Ok(s) => Ok(Some(s)),
+            Ok(s) => Ok(s),
             Err(_) => {
                 Err(IBKRApiLibError::TryRecvError(TryRecvError::Disconnected))
             },
